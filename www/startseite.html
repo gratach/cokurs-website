@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <title></title>
+    <meta content=""/>
+ 	<meta charset="UTF-8" /> 
+<style>
+	*{
+		box-sizing: border-box; 
+		margin:0;
+		border:0;
+		padding:0;
+		word-break: break-word;
+		overflow: hidden;
+	}
+	div{
+		float:left;
+		text-align: center;
+		vertical-align: middle;
+	}
+	.links{
+		width:38%;
+		height:100%;
+	}
+	.rechts{
+		width:62%;
+		height:100%;
+		background-color:green
+
+	}
+	.oben{
+		width:100%;
+		height:19vw;
+		background-color:red;
+		image-rendering: pixelated; 
+		image-rendering: -moz-crisp-edges; 
+		image-rendering: crisp-edges; 
+		background-image:url('/piskel/still/cokurs-logo.png');
+		background-size: cover;
+
+	}
+	.unten{
+		width:100%;
+		height:calc(100vh - 19vw);
+		font-size:1.9vmin;
+		text-align: center;
+		background-color: #55ee88;
+		padding:6vmin
+
+	}
+	.animation{
+		width:100%; 
+		height:100%; 
+		image-rendering: pixelated; 
+		image-rendering: -moz-crisp-edges; 
+		image-rendering: crisp-edges; 
+		background-image:url('/piskel/cokurs-logo.gif');
+		background-size: cover;
+		opacity:0;
+	}
+	.animation:focus{
+		opacity:1;
+	}
+	@media screen and (max-width: 85vh) {
+		.links{
+			width:100vw;
+			height:65vh;
+		}
+		.rechts{
+			width:100vw;
+			height:35vh;
+
+		}
+		.oben{
+			width:100%;
+			height:50vw;
+
+		}
+		.unten{
+			width:100%;
+			height:calc(65vh - 50vw);
+
+		}
+	}
+</style>
+  </head>
+  <body>
+	<div class="links">
+		<div class="oben">
+			<button class="animation" style="" title = "Cokurs"/>
+		</div>
+		<div class="unten">
+			<h2 style="color:#ee7700">
+			Regeln im Cokurs:
+			</h2>
+			<p>
+			<br/>
+			Jeder kann eigenständig an seinen eigenen Projekten arbeiten.
+			<p></p>
+			<br/>
+			Dabei dürfen aber keine Inhalte verwendet werden, die zur Unterhaltung geschaffen wurden, außer sie wurden selbst erstellt.
+			</p></p>
+			<br/>
+			Nicht erlaubt sind also: Spiele, Unterhaltungsvideos, soziale Netzwerke usw.
+			</p></p>
+			<br/>
+			Bitte sei nett zu den anderen und gehe verantwortungsvoll mit den Computern um.
+			</p>
+		</div>
+	</div>
+	<div class="rechts">
+		<iframe src="./wiki.html" name="aktuell" style="width:100%;height:100%;"/>
+	</div>
+		
+</body>
+</html>
