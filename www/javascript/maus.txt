@@ -1,0 +1,2 @@
+bild.clearRect(0, 0, width, height);
+bild.fillRect(maus.x, maus.y, 200, 200); 

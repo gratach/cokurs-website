@@ -1,0 +1,70 @@
+<html>
+	<head>
+		<title>
+			<!--Name-->
+		</title>
+		<meta charset='utf-8'/>
+		<style>
+			*{box-sizing: border-box; margin:0;border:0;padding:0;}
+		</style>
+	</head>
+	<body>
+		<canvas id = 'canv'  style="width:100%;height:100%;float:left;">
+		</canvas>
+		<div id = 'fenster' style="position:absolute;top: 0;left: 0;width : 100%; height : 100%; float:left;">
+		</div>
+	</body>
+	<script>
+		var fenster = document.getElementById('fenster');
+		var canv = document.getElementById('canv');
+		var func = function(){
+//--Code-Andang--
+//--Der-Code--
+//--Code-Ende--
+		}
+		var canv = document.getElementById("canv");
+		var dpr = window.devicePixelRatio || 1;
+		canv.width = canv.getBoundingClientRect().width * dpr;
+		canv.height = canv.getBoundingClientRect().height * dpr;
+		var fenster = document.getElementById("fenster");
+		var ctx = canv.getContext('2d');
+		var bild = ctx;
+		var c = ctx;
+		var width = canv.width;
+		var height = canv.height;
+		var glob = {};
+		var schleife = false;//--Schleife--
+		var aktiv = true;
+		var maus = {x:0,y:0};
+		var neu = true;
+		var startzeit = (new Date()).getTime() / 1000;
+		var zeit;
+		document.onmousemove = mausmove; 
+		function mausmove(e){
+			var rect = canv.getBoundingClientRect();
+			maus.x = e.clientX - rect.left;
+			maus.y = e.clientY - rect.top;
+		}
+		var tasten = [];
+		document.onkeydown = keydown;
+		function keydown(e){
+			var pos = tasten.indexOf(e.key);
+			if(pos < 0)
+				tasten.push(e.key);
+		}
+		document.onkeyup = keyup;
+		function keyup(e){
+			var pos = tasten.indexOf(e.key);
+			if(pos >= 0)
+				tasten.splice(pos, 1);
+		}
+		function itera(){
+			zeit = (new Date()).getTime() / 1000 - startzeit;
+			func();
+			if(schleife && aktiv)
+				requestAnimationFrame(itera);
+			neu = false;
+		}
+		itera();
+	</script>
+</html>

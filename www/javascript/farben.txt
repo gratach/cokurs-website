@@ -1,0 +1,20 @@
+if(neu){
+	this.t = 0;
+}
+
+var amplitude = Math.sin(t*10)*300;
+var rot = 125 + 125*Math.sin(t + Math.PI * 4 / 3);
+var gruen = 125 + 125*Math.sin(t + Math.PI * 2 / 3);
+var blau = 125 + 125*Math.sin(t);
+var mittex = width / 2;
+var mittey = height / 2;
+var größe = 30;
+
+bild.fillStyle = "rgb(" + rot + "," + gruen + "," + blau + ")";
+bild.fillRect(mittex - größe / 2 + Math.sin(t) * amplitude,
+	mittey - größe / 2 + Math.cos(t) * amplitude,
+	größe, 
+	größe);
+
+t += 0.01;
+

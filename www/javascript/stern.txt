@@ -1,0 +1,8 @@
+//ctx.clearRect(0,0,width, height);
+bild.beginPath();
+bild.arc(width/2 + Math.sin(zeit)*300,height/2 + Math.cos(zeit) *300,50*(Math.sin(zeit*5) + 1),0,2*Math.PI, true);
+bild.strokeStyle = 'red';
+bild.fillStyle='black';
+bild.fill();
+bild.stroke();
+ 

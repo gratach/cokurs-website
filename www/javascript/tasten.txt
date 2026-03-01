@@ -1,0 +1,25 @@
+if(neu)
+{
+	this.ort = {x : 0, y : 0};
+}
+for(t of tasten)
+{
+	if(t == 'ArrowLeft')
+	{
+		ort.x -= 3;
+	}
+	if(t == 'ArrowRight')
+	{
+		ort.x += 3;
+	}
+	if(t == 'ArrowUp')
+	{
+		ort.y -= 3;
+	}
+	if(t == 'ArrowDown')
+	{
+		ort.y += 3;
+	}
+}
+bild.clearRect(0, 0, width, height);
+bild.fillRect(ort.x, ort.y, 200, 200);

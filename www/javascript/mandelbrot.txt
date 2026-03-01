@@ -1,0 +1,68 @@
+// Dies ist die Mandelbrotmenge
+// Navigieren mit w, a, s, d, PfeilHoch, PfeilRunter
+
+if(neu)
+{
+	hoch = 100
+	breit = 100
+	iteras = 30
+	radius = 7
+	mx = -0.6
+	my = 0
+	s = 0.03
+	kastenbreit = width / breit
+	kastenhoch = height / hoch
+}
+function palette(f){
+	if(f < 0.25)
+		return "rgb(0,0,"+Math.floor(f*4*255)+")"
+	if(f < 0.5)
+		return "rgb(0,"+Math.floor((f-0.25)*4*255)+","+Math.floor((0.5 - f)*4*255)+")"
+	if(f < 0.75)
+		return "rgb("+Math.floor((f - 0.5)*4*255)+","+Math.floor((0.75 - f)*4*255)+",0)"
+	return "rgb(255,"+Math.floor((f-0.75)*4*255)+","+Math.floor((f-0.75)*4*255)+")"
+}
+bild.clearRect(0, 0, width, height)
+cx = mx - s * breit / 2
+for(x = 0; x < breit; x++){
+	cy = my - s * hoch / 2
+	for(y = 0; y < hoch; y++){
+		zx = cx
+		zy = cy
+		drinnen = false
+		for(i = 0; zx*zx + zy*zy < radius*radius; i++){
+			if(i == iteras){
+				drinnen = true
+				break
+			}
+			zxneu = zx * zx - zy * zy + cx
+			zy = 2 * zx * zy + cy
+			zx = zxneu
+		}
+		if(drinnen)
+			bild.fillStyle = "rgb(0,0,0)"
+		else
+			bild.fillStyle = palette(i / iteras)
+		xanf = Math.floor(kastenbreit * x)
+		xend = Math.floor(kastenbreit * (x + 1))
+		yanf = Math.floor(kastenhoch * y)
+		yend = Math.floor(kastenhoch * (y + 1))
+		bild.fillRect(xanf, yanf, xend - xanf, yend - yanf)
+		
+		cy += s
+	}
+	cx += s
+}
+if(tasten.includes("w"))
+	my -= s
+if(tasten.includes("s"))
+	my += s
+if(tasten.includes("a"))
+	mx -= s
+if(tasten.includes("d"))
+	mx += s
+if(tasten.includes("ArrowUp"))
+	s /= 1.02
+if(tasten.includes("ArrowDown"))
+	s *= 1.02
+

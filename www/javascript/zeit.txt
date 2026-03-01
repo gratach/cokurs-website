@@ -1,0 +1,3 @@
+fenster.style.fontSize = 40;
+
+fenster.textContent = "Sekunden: " + zeit;

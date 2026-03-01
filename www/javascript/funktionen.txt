@@ -1,0 +1,14 @@
+function abschied(name){
+	alert("Tschüß " + name + ". Bis später.");
+}
+
+function grüßen(name){
+	alert("Hallo " + name);
+}
+
+
+grüßen("Peter");
+grüßen("Anna");
+
+abschied("Anna");
+abschied("Peter");

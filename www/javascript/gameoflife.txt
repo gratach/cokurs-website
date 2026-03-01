@@ -1,0 +1,94 @@
+// Game of Life
+
+// Klicke mit der Maus auf das Feld um Zellen zu zeichnen
+
+// Fokussiere das Feld und Tippe Leertaste 
+// um die Simulation zu starten / zu stoppen
+
+if(neu)
+{
+	hoch = 100
+	breit = 100
+	
+	mache = false
+	kastenbreit = width / breit
+	kastenhoch = height / hoch
+	spielfeld = []
+	ersatzfeld = []
+	for(x = 0; x < breit; x++){
+		spielfeld.push([])
+		ersatzfeld.push([])
+		for(y = 0; y < hoch; y++){
+			spielfeld[x].push(false)
+			ersatzfeld[x].push(false)
+		}
+	}
+	spielfeld[1][2] = true
+	spielfeld[2][3] = true
+	spielfeld[3][3] = true
+	spielfeld[3][2] = true
+	spielfeld[3][1] = true
+	fenster.onmousedown = (e)=>{
+		mx = Math.floor(maus.x / kastenbreit)
+		my = Math.floor(maus.y / kastenhoch)
+		spielfeld[mx][my] = !spielfeld[mx][my]
+	}
+}
+bild.clearRect(0, 0, width, height)
+for(x = 0; x < breit; x++){
+	for(y = 0; y < hoch; y++){
+		if(spielfeld[x][y]){
+			bild.fillRect(
+				kastenbreit * x,
+				kastenhoch * y,
+				kastenbreit,
+				kastenhoch)
+		}
+	}
+}
+if(tasten.includes(" ")){
+	if(!space)
+		mache = !mache
+	space = true
+}
+else
+	space = false
+for(x = 1; x < breit - 1; x++){
+	for(y = 1; y < hoch - 1; y++){
+		umgebung = 0
+		if(spielfeld[x - 1][y - 1])
+			umgebung += 1
+		if(spielfeld[x][y - 1])
+			umgebung += 1
+		if(spielfeld[x + 1][y - 1])
+			umgebung += 1
+		if(spielfeld[x + 1][y])
+			umgebung += 1
+		if(spielfeld[x + 1][y + 1])
+			umgebung += 1
+		if(spielfeld[x][y + 1])
+			umgebung += 1
+		if(spielfeld[x - 1][y + 1])
+			umgebung += 1
+		if(spielfeld[x - 1][y])
+			umgebung += 1
+		
+		if(spielfeld[x][y]){
+			ersatzfeld[x][y] = 
+				(umgebung < 4 && umgebung > 1)
+		}
+		else{
+			ersatzfeld[x][y] = 
+				(umgebung == 3)
+		}
+	}
+}
+if(mache){
+	temp = ersatzfeld
+	ersatzfeld = spielfeld
+	spielfeld = temp
+}
+
+
+ 
+

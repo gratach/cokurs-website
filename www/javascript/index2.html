@@ -1,0 +1,243 @@
+<html>
+  <head>
+    <title></title>
+	<meta charset="utf-8"/>
+    <style>*{box-sizing: border-box; margin:0;border:0;padding:0;}</style>
+  </head>
+ 	<body>
+		<div style="width:50%;height:100%;float:left;">
+			<div style="width:100%;height:10%;">
+				<button id = "ausf" onclick = "runclick()" style="width:33%;height:100%;float:left;font-size:3vmin;background-color:70F080;">
+					Ausf&uumlhren
+				</button>
+				<button id = "schl" onclick = "schleifeclick()" style="width:33%;height:100%;float:left;font-size:3vmin;background-color:40C0F0;">
+					Schleife
+				</button>
+				<select id ="wahl" onchange='ladetext()' style="width:34%;height:100%;float:left;font-size:3vmin;text-align:center;background-color:FFFFFF;">
+					<option id = "beisp" value="" disabled>Beispiele</option>
+					<option value="./text.txt" selected = "selected">Eingabe und Ausgabe</option>
+					<option value="./rechteck.txt">Rechteck</option>
+					<option value="./maus.txt">Maussteuerung</option>
+					<option value="./tasten.txt">Tastensteuerung</option>
+					<option value="./button.txt">Button</option>
+					<option value="./zeit.txt">Zeit</option>
+					<option value="./farben.txt">Farben</option>
+				</select>
+				</select>
+			</div>
+			<textarea id="formel" wrap = 'off' oninput = "textwandel()" style="width:100%;height:90%;border-width:20px;font-size:3vmin;border-style: solid;border-color:C1E0F0;float:left;"></textarea>
+		</div>
+		<div style = 'width:50%;height:100%;position:relative;float:left;'>
+			<canvas id = 'canv'  style="width:100%;height:100%;float:left;"></canvas>
+			<div id = 'fenster' style="position:absolute;top: 0;left: 0;width : 100%; height : 100%;float:left;"></div>
+			<div id = 'fehl' style="font-size:5vmin; position:absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);float:left;color:red;background-color:orange;"></div>
+		</div>
+	</body>
+	<script>
+		var canv = document.getElementById("canv");
+		var dpr = window.devicePixelRatio || 1;
+		canv.width = canv.getBoundingClientRect().width * dpr;
+		canv.height = canv.getBoundingClientRect().height * dpr;
+		var formel = document.getElementById("formel");
+		formel.addEventListener('keydown',tabcheck);
+		var fehl = document.getElementById("fehl");
+		var ausf = document.getElementById("ausf");
+		var schl = document.getElementById("schl");
+		var wahl = document.getElementById("wahl");
+		var beisp = document.getElementById("beisp");
+		var fenster = document.getElementById("fenster");
+		var func = function(canvas){};
+		var ctx = canv.getContext('2d');
+		var width = canv.width;
+		var height = canv.height;
+		var f;
+		var glob = {};
+		var schleife = false;
+		var aktiv = false;
+		var maus = {x:0,y:0};
+		var neu = true;
+		var startzeit = (new Date()).getTime() / 1000;
+		var zeit;
+		document.onmousemove = mausmove; 
+		function mausmove(e){
+			var rect = canv.getBoundingClientRect();
+			maus.x = e.clientX - rect.left;
+			maus.y = e.clientY - rect.top;
+		}
+		var tasten = [];
+		document.onkeydown = keydown;
+		function keydown(e){
+			var pos = tasten.indexOf(e.key);
+			if(pos < 0)
+				tasten.push(e.key);
+		}
+		document.onkeyup = keyup;
+		function keyup(e){
+			var pos = tasten.indexOf(e.key);
+			if(pos >= 0)
+				tasten.splice(pos, 1);
+		}
+		function ladetext(){
+			var x = new XMLHttpRequest();
+			x.onreadystatechange = function() {
+			    if (this.readyState == 4 && this.status == 200) {
+			       formel.value = x.responseText;
+				textneu();
+			    }
+			};
+			x.open("GET", wahl.value, true);
+			x.send();
+			formel.focus();
+		}
+		function fensterputzen(){
+			while(fenster.firstChild)
+				fenster.removeChild(fenster.firstChild);
+		}
+		function textwandel(){
+			textneu();
+			beisp.selected = "selected";
+		}
+		function zitatende(text, ort, ende){
+			var c = text[ort];
+			ort++;
+			while(ort < ende && text[ort] != c){
+				if(ort < ende && text[ort] == '\\')
+					ort ++;
+				ort++;
+			}
+			return ort;
+		}
+		function schweifklammerzahl(text, anf, end){
+			var c = 0;
+			for(let i = anf; i < end; i++)
+				if(text[i] == '{')
+					c++;
+				else if(text[i] == '}')
+					c--;
+				else if(text[i] == '\'' || text[i] == '\"')
+					i = zitatende(text, i, end);
+			return c;
+				
+		}
+		function tabcheck(e){
+			var anf = formel.selectionStart;
+			var end = formel.selectionEnd;
+			if(e.keyCode == 9){
+				formel.value = formel.value.substring(0, anf) + "\t" + formel.value.substring(end);
+				formel.selectionStart = formel.selectionEnd = anf + 1;
+				e.preventDefault();
+			}
+			if(e.keyCode == 13){
+				var c = schweifklammerzahl(formel.value, 0, anf);
+				var temp = "";
+				
+				for(let i = 0; i < c; i++)
+					temp += "\t";
+				formel.value = formel.value.substring(0, anf) + "\n" + temp + formel.value.substring(end);
+				formel.selectionStart = formel.selectionEnd = anf + (c>0?c:0) + 1;
+				e.preventDefault();
+			}
+			if(e.key == '}'){
+				if(anf > 0 && formel.value[anf - 1] == '\t')
+				{
+					formel.value = formel.value.substring(0, anf - 1) + "}" + formel.value.substring(end);
+					formel.selectionStart = formel.selectionEnd = anf;
+				}
+				else{
+					formel.value = formel.value.substring(0, anf) + "}" + formel.value.substring(end);
+					formel.selectionStart = formel.selectionEnd = anf + 1;
+				}
+				e.preventDefault();
+				textwandel();
+				
+			}
+		}
+		function textneu(){
+			f = false;
+			try{
+				func = Function("return function(){"+formel.value+"\n};")();
+			}
+			catch(err)
+				{
+					f = true;
+					fehl.textContent = err.message;
+					func = function(){f = true;};
+				}
+			if(!f && !aktiv)
+				fehl.textContent = "";
+			farbgebung();
+			neu = true;
+			tasten = [];
+		}
+		function schleifeclick(){
+			schleife = !schleife;
+			if(schleife && !aktiv){
+				aktiv = true;
+				farbgebung();
+				itera();
+			}
+			farbgebung();
+		}
+		
+		function runclick(){
+			if(!schleife)
+			{
+				aktiv = true;
+				farbgebung();
+				itera();
+			}
+			farbgebung();
+		}
+		
+		function farbgebung(){
+			if(schleife){
+				schl.style.backgroundColor = "orange";
+				schl.textContent = "Stoppe Schleife";
+				ausf.style.backgroundColor = "70F080";
+				ausf.textContent = "";
+			}
+			else{
+				if(aktiv){
+					ausf.style.backgroundColor = "red";
+					ausf.textContent = "";
+				}
+				else{
+					ausf.style.backgroundColor = "70F080";
+					ausf.textContent = "Ausführen";
+				}
+				schl.style.backgroundColor = "40C0F0";
+				schl.textContent = "Schleife";
+			}
+		}
+		
+		function itera(){
+			if(neu){
+				fensterputzen();
+				startzeit = (new Date()).getTime() / 1000; 
+			}
+			zeit = (new Date()).getTime() / 1000 - startzeit; 
+			f = false;
+			try{
+				func();
+			}
+			catch(err){
+				fehl.textContent = err.message;
+				f = true;
+			}
+			if(!f)
+				fehl.textContent = "";
+			if(schleife)
+				requestAnimationFrame(itera);
+			else
+				aktiv = false;
+			farbgebung();
+			neu = false;
+		}
+		
+		if(formel.value == "")
+			ladetext();
+		else
+			beisp.selected = "selected";
+		textneu();
+	</script>
+</html>

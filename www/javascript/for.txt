@@ -1,0 +1,8 @@
+alert("Dieses Programm zählt von 5 bis 10");
+
+for(let i = 5; i <= 10; i++)
+{
+	alert(i);
+}
+
+alert("Fertig");
