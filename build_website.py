@@ -3,7 +3,9 @@ from pathlib import Path
 from json import dump, load
 from shutil import rmtree, copytree
 from lib.create_html_for_project_overview import createHTMLForProjectOverview
-from lib.append_project import append_project
+from lib.append_contributors_and_projects import appendContributorsAndProjects
+from lib.copy_files_if_missing import copyFilesIfMissing
+from lib.combining_folders import combiningFolders
 
 default_config = {
     "cokurs-url": "cokurs.example.com",
@@ -17,6 +19,7 @@ default_config = {
     "impressum-responsible-person": "Enter the name of the responsible person for this website.",
 }
 default_projects = []
+default_contributors = []
 
 def main():
     # Create the argument parser
@@ -144,13 +147,12 @@ def main():
 
 
     # Clear the incompatible content of the dist folder if it exists and create it if it does not exist
-    notOverwrittenFileContents = ["glyphr", "sequencer", "website", "scetchio", "svgedit", "bilder", "lsystem", "obj", "fraktal", "piskel"]
     dist_path.mkdir(parents=True, exist_ok=True)
     print(f"Clearing incompatible content of dist folder at: {dist_path}")
     deleted_files_count = 0
     deleted_directories_count = 0
     for item in dist_path.iterdir():
-        if item.name in notOverwrittenFileContents:
+        if item.name in combiningFolders:
             print(f"Keeping existing content in dist folder: {item}")
             continue
         if item.is_file():
@@ -196,7 +198,7 @@ def main():
     number_of_occurrences_per_key = {key: 0 for key in updated_metadata_config.keys()}
     number_of_files_that_could_not_be_processed = 0
     for item in dist_path.rglob("*.*"):
-        if item.is_file() and not item.name in notOverwrittenFileContents:
+        if item.is_file() and not item.name in combiningFolders:
             try:
                 content = item.read_text()
                 for key, value in updated_metadata_config.items():
@@ -215,10 +217,15 @@ def main():
     else:
         print("All files in the dist folder were processed successfully.")
 
+    # Copy all the combining folders from input to dist
+    if import_path:
+        for dirName in combiningFolders:
+            copyFilesIfMissing(import_path / dirName, dist_path / dirName)
+
     # Get the projects jsons from the metadata directory
     metadata_projects_file = metadata_path / "projects.json"
     if metadata_projects_file.is_file():
-        print(f"Found projects.json in the metadata folder: {metadata_config_file}")
+        print(f"Found projects.json in the metadata folder: {metadata_projects_file}")
         try:
             with metadata_projects_file.open() as f:
                 metadata_projects = load(f)
@@ -247,20 +254,59 @@ def main():
         print("No import folder provided, skipping projects.json loading.")
         import_projects = []
 
-    # Combine all projects
+    # Get the contributors jsons from the metadata directory
+    metadata_contributors_file = metadata_path / "contributors.json"
+    if metadata_contributors_file.is_file():
+        print(f"Found contributors.json in the metadata folder: {metadata_contributors_file}")
+        try:
+            with metadata_contributors_file.open() as f:
+                metadata_contributors = load(f)
+            print("Loaded contributors.json successfully.")
+        except Exception as e:
+            print(f"Error: Could not load contributors.json. {e}")
+    else:
+        print(f"No contributors.json file found in the metadata folder: {metadata_path}")
+        metadata_contributors = []
+
+    # Get the contributors jsons from the input file
+    if import_path:
+        import_contributors_file = import_path / "contributors.json"
+        if import_contributors_file.is_file():
+            print(f"Found contributors.json in the import folder: {import_contributors_file}")
+            try:
+                with import_contributors_file.open() as f:
+                    import_contributors = load(f)
+                print("Loaded contributors.json successfully.")
+            except Exception as e:
+                print(f"Error: Could not load contributors.json. {e}")
+        else:
+            print(f"No contributors.json file found in the import folder: {import_path}")
+            import_contributors = []
+    else:
+        print("No import folder provided, skipping contributors.json loading.")
+        import_contributors = []
+
+    # Combine all projects and contributors
     projects = default_projects.copy()
-    for p in metadata_projects:
-        append_project(projects, p)
-    for p in import_projects:
-        append_project(projects, p)
+    contributors = default_contributors.copy()
+    appendContributorsAndProjects(contributors, projects, metadata_contributors, metadata_projects)
+    appendContributorsAndProjects(contributors, projects, import_contributors, import_projects)
 
     # Write the new projects to the metadata dir
     try:
         with metadata_projects_file.open("w") as f:
             dump(projects, f, indent=4)
-        print(f"Updated project.json in metadata folder: {metadata_projects_file}")
+        print(f"Updated projects.json in metadata folder: {metadata_projects_file}")
     except Exception as e:
         print(f"Error: Could not update projects.json in metadata folder. {e}")
+    
+    # Write the contributors to the metadata dir
+    try:
+        with metadata_contributors_file.open("w") as f:
+            dump(contributors, f, indent=4)
+        print(f"Updated contributors.json in metadata folder: {metadata_contributors_file}")
+    except Exception as e:
+        print(f"Error: Could not update contributors.json in metadata folder. {e}")
 
     # Create the projects web page
     html_projects_file = dist_path / "projekte.html"

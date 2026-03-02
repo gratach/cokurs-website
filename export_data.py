@@ -1,7 +1,8 @@
 import argparse
 from pathlib import Path
 from json import dump, load
-from shutil import rmtree, copytree
+from shutil import copytree
+from lib.combining_folders import combiningFolders
 
 def main():
     # Create the argument parser
@@ -95,6 +96,12 @@ def main():
                 print(f"Error: Could not copy directory '{item}' to '{dest}'. {e}")
     print(f"Copied {copied_files_count} files and {copied_directories_count} directories from www folder to dist folder.")
     
+    # Copy the combining folders to the export folder
+    print("Copy the combining folders to the export folder")
+    for dirName in combiningFolders:
+        fromPath = dist_path / dirName
+        if fromPath.isDir():
+            copytree(fromPath, export_path / dirName)
 
 if __name__ == "__main__":
     main()

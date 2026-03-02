@@ -2,18 +2,18 @@ from .html_building_blocks import *
 
 def createProjectHTMLTile(filestream, projectJSON):
     if projectJSON["typ"] == "gif":
-        filestream.write(gifbox%(projectJSON["inh"]["thumbpfad"][1:], projectJSON["titel"], projectJSON["inh"]["gifpfad"][1:]))
+        filestream.write(gifbox%(projectJSON["inh"]["thumbpfad"], projectJSON["titel"], projectJSON["inh"]["gifpfad"]))
     elif projectJSON["typ"] == "svg":
-        filestream.write(svgbox%(projectJSON["inh"]["svgpfad"][1:], projectJSON["inh"]["svgpfad"][1:], projectJSON["titel"]))
+        filestream.write(svgbox%(projectJSON["inh"]["svgpfad"], projectJSON["inh"]["svgpfad"], projectJSON["titel"]))
     elif projectJSON["typ"] == "audio":
-        filestream.write(audiobox%(projectJSON["titel"], projectJSON["inh"]["audiopfad"][1:]))
+        filestream.write(audiobox%(projectJSON["titel"], projectJSON["inh"]["audiopfad"]))
     elif projectJSON["typ"] == "bitmap":
-        filestream.write(bitmapbox%(projectJSON["inh"]["bitmappfad"][1:], projectJSON["inh"]["thumbpfad"][1:], projectJSON["titel"]))
+        filestream.write(bitmapbox%(projectJSON["inh"]["bitmappfad"], projectJSON["inh"]["thumbpfad"], projectJSON["titel"]))
     elif projectJSON["typ"] == "schrift":
-        filestream.write(schriftbox%(projectJSON["inh"]["schriftpfad"][1:], projectJSON["inh"]["thumbpfad"][1:], projectJSON["titel"]))
+        filestream.write(schriftbox%(projectJSON["inh"]["schriftpfad"], projectJSON["inh"]["thumbpfad"], projectJSON["titel"]))
     elif projectJSON["typ"] == "html":
-        filestream.write(htmlbox%(projectJSON["inh"]["pfad"][1:], projectJSON["titel"], projectJSON["titel"]))
+        filestream.write(htmlbox%(projectJSON["inh"]["pfad"], projectJSON["titel"], projectJSON["titel"]))
     elif projectJSON["typ"] == "scratch":
         filestream.write(scratchbox%(projectJSON["inh"]["pfad"], projectJSON["titel"], projectJSON["titel"]))
     elif projectJSON["typ"] == "dreid":
-        filestream.write(dreidbox%(projectJSON["inh"]["progpfad"][1:], projectJSON["inh"]["thumbpfad"][1:], projectJSON["titel"]))
+        filestream.write(dreidbox%(projectJSON["inh"]["progpfad"], projectJSON["inh"]["thumbpfad"], projectJSON["titel"]))
