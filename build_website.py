@@ -2,6 +2,8 @@ import argparse
 from pathlib import Path
 from json import dump, load
 from shutil import rmtree, copytree
+from lib.create_html_for_project_overview import createHTMLForProjectOverview
+from lib.append_project import append_project
 
 default_config = {
     "cokurs-url": "cokurs.example.com",
@@ -14,6 +16,7 @@ default_config = {
     "impressum-contact-email": "Enter the contact email address for this website.",
     "impressum-responsible-person": "Enter the name of the responsible person for this website.",
 }
+default_projects = []
 
 def main():
     # Create the argument parser
@@ -109,7 +112,7 @@ def main():
                 print(f"Error: Could not load config.json. {e}")
         else:
             print(f"No config.json file found in the import folder: {import_path}")
-            importconfig = {}
+            import_config = {}
     else:
         print("No import folder provided, skipping config.json loading.")
         import_config = {}
@@ -211,6 +214,58 @@ def main():
         print(f"Warning: Could not process {number_of_files_that_could_not_be_processed} files in the dist folder. Please check the error messages above for more details.")
     else:
         print("All files in the dist folder were processed successfully.")
+
+    # Get the projects jsons from the metadata directory
+    metadata_projects_file = metadata_path / "projects.json"
+    if metadata_projects_file.is_file():
+        print(f"Found projects.json in the metadata folder: {metadata_config_file}")
+        try:
+            with metadata_projects_file.open() as f:
+                metadata_projects = load(f)
+            print("Loaded projects.json successfully.")
+        except Exception as e:
+            print(f"Error: Could not load projects.json. {e}")
+    else:
+        print(f"No projects.json file found in the metadata folder: {metadata_path}")
+        metadata_projects = []
+
+    # Get the projects jsons from the input file
+    if import_path:
+        import_projects_file = import_path / "projects.json"
+        if import_projects_file.is_file():
+            print(f"Found projects.json in the import folder: {import_projects_file}")
+            try:
+                with import_projects_file.open() as f:
+                    import_projects = load(f)
+                print("Loaded projects.json successfully.")
+            except Exception as e:
+                print(f"Error: Could not load projects.json. {e}")
+        else:
+            print(f"No projects.json file found in the import folder: {import_path}")
+            import_projects = []
+    else:
+        print("No import folder provided, skipping projects.json loading.")
+        import_projects = []
+
+    # Combine all projects
+    projects = default_projects.copy()
+    for p in metadata_projects:
+        append_project(projects, p)
+    for p in import_projects:
+        append_project(projects, p)
+
+    # Write the new projects to the metadata dir
+    try:
+        with metadata_projects_file.open("w") as f:
+            dump(projects, f, indent=4)
+        print(f"Updated project.json in metadata folder: {metadata_projects_file}")
+    except Exception as e:
+        print(f"Error: Could not update projects.json in metadata folder. {e}")
+
+    # Create the projects web page
+    html_projects_file = dist_path / "projekte.html"
+    with html_projects_file.open("w") as f:
+        createHTMLForProjectOverview(f, projects[::-1])
 
 
 if __name__ == "__main__":

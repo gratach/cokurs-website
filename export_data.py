@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 from json import dump, load
+from shutil import rmtree, copytree
 
 def main():
     # Create the argument parser
@@ -74,16 +75,26 @@ def main():
         print(f"Error: Could not create export folder at '{export_path}'. {e}")
         return
     
-    # Copy the config.json file from the metadata folder to the export folder
-    try:
-        with open(metadata_path / "config.json", "r") as f:
-            config_data = load(f)
-        with open(export_path / "config.json", "w") as f:
-            dump(config_data, f, indent=4)
-        print(f"Copied config.json from metadata folder to export folder.")
-    except Exception as e:
-        print(f"Error: Could not copy config.json from metadata folder to export folder. {e}")
-        return
+    # Copy the content of the metadata folder to the export folder
+    print(f"Copying content from metadata folder to export folder...")
+    copied_files_count = 0
+    copied_directories_count = 0
+    for item in metadata_path.iterdir():
+        dest = export_path / item.name
+        if item.is_file():
+            try:
+                dest.write_bytes(item.read_bytes())
+                copied_files_count += 1
+            except Exception as e:
+                print(f"Error: Could not copy file '{item}' to '{dest}'. {e}")
+        elif item.is_dir():
+            try:
+                copytree(item, dest)
+                copied_directories_count += 1
+            except Exception as e:
+                print(f"Error: Could not copy directory '{item}' to '{dest}'. {e}")
+    print(f"Copied {copied_files_count} files and {copied_directories_count} directories from www folder to dist folder.")
+    
 
 if __name__ == "__main__":
     main()
