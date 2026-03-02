@@ -7,6 +7,12 @@ default_config = {
     "cokurs-url": "cokurs.example.com",
     "institution-url": "the-institution-that-runs-cokurs.example.com",
     "institution-text": "Enter the name of the institution that runs Cokurs",
+    "impressum-description": "Enter the description of this website for the impressum page.",
+    "impressum-address": "Enter the address of the institution that runs Cokurs.",
+    "impressum-city": "Enter the city of the institution that runs Cokurs.",
+    "impressum-timeframe": "Enter the timeframe of the project for the impressum page.",
+    "impressum-contact-email": "Enter the contact email address for this website.",
+    "impressum-responsible-person": "Enter the name of the responsible person for this website.",
 }
 
 def main():
@@ -17,7 +23,7 @@ def main():
     parser.add_argument(
         '-i', '--import-folder',
         type=str,
-        help='Path to the import folder containing the data of the website. The format of this folder is the same as the folder that is created when running the export_data.py script.',
+        help='Path to the import folder containing the data of the website. The format of this folder is the same as the folder that is created when This can include information about the purpose of the website, the target audience, and any other relevant details that you want to share with your visitors. running the export_data.py script.',
         required=False
     )
     parser.add_argument(
