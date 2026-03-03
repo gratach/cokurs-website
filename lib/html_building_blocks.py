@@ -73,8 +73,8 @@ body, html {
 .kasten{
 	width:14.2857%;
 	height:14.2857vw;
-  float: left;
-   overflow: hidden;
+    float: left;
+    overflow: hidden;
 }
 
 @media screen and (max-width: 1200px) {
@@ -147,11 +147,13 @@ a, img, .seite{
 	display: inline-block;
 }
 .musik{
-	background-image: url("musikicon.svg");
+	background-image: url("./musikicon.svg");
 	background-position: center;
-	  background-repeat: no-repeat;
-	  background-size: cover;
-	display: inline-block;
+    background-repeat: no-repeat;
+    background-size: cover;
+	display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .rm{
 	image-rendering: pixelated;
@@ -178,6 +180,11 @@ a, img, .seite{
 	width : 100%;
 	height : 100%;
 	background-size: cover;
+}
+.audio{
+    width: 90%;
+    max-width: 100%;
+    height: 32:px;
 }
 </style>
   </head>
