@@ -7,7 +7,7 @@ dreidbox = """
 """
 schriftbox = """
 <div class= "kasten">
-	<a href = "/font-test/lade.html?pfad=%s" target = "_top"> 
+	<a href = "./font_von_url.html?pfad=%s" target = "_top"> 
 		<img class = "rm" src = "%s" title = "%s"/>
 	</a>
 </div>

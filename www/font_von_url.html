@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <style>
+    	body {
+		margin: 0;
+	}
+    </style>
+  </head>
+	<body>
+		<iframe src="./index.html" style="border: 0; width: 100%; height: 100%" id = "ifrm" onload="laden()"></iframe> 
+		<script>
+			function iframeneu(ifrm, f){
+				ifrm.onload = ()=>{iframeneu(ifrm, f);};
+				var win = ifrm.contentWindow; // reference to iframe's window
+				var doc = ifrm.contentDocument? ifrm.contentDocument: ifrm.contentWindow.document;
+				doc.fonts.add(f);
+				var sheet = doc.styleSheets[0];
+				sheet.insertRule("body, html {font-family: fentfomily;} ", 1);
+				var inputs = doc.getElementsByTagName('iframe');
+				for(var i = 0; i < inputs.length; i++) {
+					iframeneu(inputs[i], f);
+				}
+			}
+			function laden(){
+				var urlf = new URL(document.URL);
+				var urlf2 = new URL(urlf.searchParams.get('pfad'), document.URL);
+				if(urlf.origin == urlf2.origin){
+					var f = new FontFace('fentfomily', "url("+urlf2.toString()+")");
+					f.load().then(function() {
+						console.log('font ready');
+		
+						var ifrm = document.getElementById('ifrm');
+						iframeneu(ifrm, f);
+					});
+					//reader.readAsArrayBuffer(event.target.files[0]);
+				}
+				else{
+					console.log("Es können nur fonts von der selben origin " + urlf.origin + " geladen werden.")
+				}
+			}
+		</script>
+	</body>
+</html>

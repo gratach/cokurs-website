@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style>
+    	body {
+		margin: 0;
+	}
+    </style>
+  </head>
+	<body>
+		<input id="schrift" type="file" onchange='openFile(event)' />
+		<iframe src="./index.html" style="border: 0; width: 100%; height: 100%" onload="laden()" id = "ifrm"></iframe> 
+		<script>
+			function laden(){
+				var aktion = document.getElementById('schrift');
+				aktion.click();
+			}
+			function iframeneu(ifrm, f){
+				ifrm.onload = ()=>{iframeneu(ifrm, f);};
+				var win = ifrm.contentWindow; // reference to iframe's window
+				var doc = ifrm.contentDocument? ifrm.contentDocument: ifrm.contentWindow.document;
+				doc.fonts.add(f);
+				var sheet = doc.styleSheets[0];
+				sheet.insertRule("body, html {font-family: Rumpel;} ", 1);
+				var inputs = doc.getElementsByTagName('iframe');
+				for(var i = 0; i < inputs.length; i++) {
+					iframeneu(inputs[i], f);
+				}
+			}
+			function openFile(event){
+				//var tmppath = URL.createObjectURL(event.target.files[0]);
+				//console.log(tmppath);
+				let reader = new FileReader();
+				reader.onload = function(e) {
+					var f = new FontFace('Rumpel', e.target.result);
+					f.load().then(function() {
+						console.log('font ready');
+				
+						var ifrm = document.getElementById('ifrm');
+						iframeneu(ifrm, f);
+					});
+				
+				};
+				reader.readAsArrayBuffer(event.target.files[0]);
+			}
+		</script>
+	</body>
+</html>
