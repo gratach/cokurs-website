@@ -27,6 +27,16 @@ def main():
         help='Path to the metadata folder of the cokurs website. If this argument is not provided, the script will look for a metadata folder in the same directory as the script.',
         required=False
     )
+    parser.add_argument(
+        '-a', '--assets-folder',
+        type=str,
+        help='Path to the assets folder where the scratch assets for the website are stored. If this argument is not provided, the script will take look for a scratch-assets folder in the same directory as the script.',
+    )
+    parser.add_argument(
+        '-p', '--projects-folder',
+        type=str,
+        help='Path to the projects folder where the scratch projects for the website are stored. If this argument is not provided, the script will take look for a scratch-projects folder in the same directory as the script.',
+    )
     
     # Parse the arguments
     args = parser.parse_args()
@@ -100,8 +110,17 @@ def main():
     print("Copy the combining folders to the export folder")
     for dirName in combiningFolders:
         fromPath = dist_path / dirName
-        if fromPath.isDir():
+        if fromPath.is_dir():
             copytree(fromPath, export_path / dirName)
+
+    # Copy the scratch assets and projects folder to the export dir
+    scratch_assets_path = Path(args.assets_folder) if args.assets_folder else Path(__file__).parent / "scratch-assets"
+    scratch_projects_path = Path(args.projects_folder) if args.projects_folder else Path(__file__).parent / "scratch-projects"
+    if scratch_assets_path.is_dir():
+        copytree(scratch_assets_path, export_path / "scratch-assets")
+    if scratch_projects_path.is_dir():
+        copytree(scratch_projects_path, export_path / "scratch-projects")
+
 
 if __name__ == "__main__":
     main()

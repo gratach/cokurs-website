@@ -6,6 +6,8 @@ from lib.create_html_for_project_overview import createHTMLForProjectOverview
 from lib.append_contributors_and_projects import appendContributorsAndProjects
 from lib.copy_files_if_missing import copyFilesIfMissing
 from lib.combining_folders import combiningFolders
+from lib.assighn_new_scratch_projects_to_existing import assignNewFilesToExistingOnes
+from lib.update_id_in_scratch_projects import updateIDInScratchProjects
 
 default_config = {
     "cokurs-url": "cokurs.example.com",
@@ -343,9 +345,13 @@ def main():
     # Combine all projects and contributors
     projects = default_projects.copy()
     contributors = default_contributors.copy()
-    scratch_project_paths = default_scratch_project_paths.copy()
     appendContributorsAndProjects(contributors, projects, metadata_contributors, metadata_projects)
-    appendContributorsAndProjects(contributors, projects, import_contributors, import_projects)
+    if (import_path / "scratch-projects").is_dir():
+        oldScratchProjectsnamesMappedToNewScratchProjectNames = assignNewFilesToExistingOnes(scratch_projects_path, import_path / "scratch-projects")
+    else:
+        oldScratchProjectsnamesMappedToNewScratchProjectNames = {}
+    updated_import_projects = updateIDInScratchProjects(import_projects, oldScratchProjectsnamesMappedToNewScratchProjectNames)
+    appendContributorsAndProjects(contributors, projects, import_contributors, updated_import_projects)
 
     # Write the new projects to the metadata dir
     try:
