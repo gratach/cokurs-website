@@ -17,9 +17,11 @@ default_config = {
     "impressum-timeframe": "Enter the timeframe of the project for the impressum page.",
     "impressum-contact-email": "Enter the contact email address for this website.",
     "impressum-responsible-person": "Enter the name of the responsible person for this website.",
+    "full-scratch-url-prefix": "https://the-address-of-your-scratch-server.example.com"
 }
 default_projects = []
 default_contributors = []
+default_scratch_project_paths = []
 
 def main():
     # Create the argument parser
@@ -42,6 +44,16 @@ def main():
         '-m', '--metadata-folder',
         type=str,
         help='Path to the metadata folder where the metadata of the website is stored. If this argument is not provided, the script will look for a metadata folder in the same directory as the script. The contents of this folder will be updated when running the build_website.py script. Only existing metadata that is not compatible with the data in the import folder will be overwritten.',
+    )
+    parser.add_argument(
+        '-a', '--assets-folder',
+        type=str,
+        help='Path to the assets folder where the scratch assets for the website are stored. If this argument is not provided, the script will take look for a scratch-assets folder in the same directory as the script. The contents of this folder will be updated when running the build_website script.',
+    )
+    parser.add_argument(
+        '-p', '--projects-folder',
+        type=str,
+        help='Path to the projects folder where the scratch projects for the website are stored. If this argument is not provided, the script will take look for a scratch-projects folder in the same directory as the script. The contents of this folder will be updated when running the build_website script.',
     )
     
     # Parse the arguments
@@ -101,6 +113,42 @@ def main():
             return
     else:
         print(f"Metadata folder already exists at: {metadata_path}")
+
+    # Access the --assets-folder argument
+    if args.assets_folder:
+        print(f"Assets folder provided: {args.assets_folder}")
+        scratch_assets_path = Path(args.assets_folder)
+    else:
+        print("No assets folder provided.")
+        scratch_assets_path = Path(__file__).parent / "scratch-assets"
+        print(f"Using default assets folder: {scratch_assets_path}")
+    if not scratch_assets_path.is_dir():
+        try:
+            scratch_assets_path.mkdir(parents=True, exist_ok=True)
+            print(f"Created assets folder at: {scratch_assets_path}")
+        except Exception as e:
+            print(f"Error: Could not create assets folder at '{scratch_assets_path}'. {e}")
+            return
+    else:
+        print(f"Assets folder already exists at: {metadata_path}")
+
+    # Access the --projects-folder argument
+    if args.projects_folder:
+        print(f"Projects folder provided: {args.projects_folder}")
+        scratch_projects_path = Path(args.projects_folder)
+    else:
+        print("No projects folder provided.")
+        scratch_projects_path = Path(__file__).parent / "scratch-projects"
+        print(f"Using default projects folder: {scratch_projects_path}")
+    if not scratch_projects_path.is_dir():
+        try:
+            scratch_projects_path.mkdir(parents=True, exist_ok=True)
+            print(f"Created projects folder at: {scratch_projects_path}")
+        except Exception as e:
+            print(f"Error: Could not create projects folder at '{scratch_projects_path}'. {e}")
+            return
+    else:
+        print(f"Projects folder already exists at: {metadata_path}")
 
     # Load the config.json file from the import folder if it exists
     if import_path:
@@ -222,6 +270,12 @@ def main():
         for dirName in combiningFolders:
             copyFilesIfMissing(import_path / dirName, dist_path / dirName)
 
+    # Copy the scratch-assets to the the assets dir
+    if import_path:
+        import_scratch_assets_path = import_path / "scratch-assets"
+        if import_scratch_assets_path.is_dir():
+            copyFilesIfMissing(import_scratch_assets_path, scratch_assets_path)
+
     # Get the projects jsons from the metadata directory
     metadata_projects_file = metadata_path / "projects.json"
     if metadata_projects_file.is_file():
@@ -289,6 +343,7 @@ def main():
     # Combine all projects and contributors
     projects = default_projects.copy()
     contributors = default_contributors.copy()
+    scratch_project_paths = default_scratch_project_paths.copy()
     appendContributorsAndProjects(contributors, projects, metadata_contributors, metadata_projects)
     appendContributorsAndProjects(contributors, projects, import_contributors, import_projects)
 
@@ -308,10 +363,12 @@ def main():
     except Exception as e:
         print(f"Error: Could not update contributors.json in metadata folder. {e}")
 
+    scratchURLPrefix = updated_metadata_config["full-scratch-url-prefix"]
+
     # Create the projects web page
     html_projects_file = dist_path / "projekte.html"
     with html_projects_file.open("w") as f:
-        createHTMLForProjectOverview(f, projects[::-1])
+        createHTMLForProjectOverview(f, projects[::-1], scratchURLPrefix)
 
 
 if __name__ == "__main__":

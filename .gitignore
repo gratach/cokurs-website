@@ -1,3 +1,5 @@
 dist/
 metadata/
+scratch-assets/
+scratch-projects/
 *.pyc

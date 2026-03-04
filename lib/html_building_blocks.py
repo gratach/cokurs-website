@@ -44,7 +44,7 @@ htmlbox = """
 </a>
 """
 scratchbox = """
-<a href = "%s" target = "_blank">
+<a href = "%s/#%s?fullscreen=true" target = "_blank">
 	<div class= "kasten textbox gelb"  title = "%s">
 		<p class = "text"/>%s</p>
 	</div>

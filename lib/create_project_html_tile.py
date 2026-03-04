@@ -1,6 +1,6 @@
 from .html_building_blocks import *
 
-def createProjectHTMLTile(filestream, projectJSON):
+def createProjectHTMLTile(filestream, projectJSON, scratchURLPrefix):
     if projectJSON["typ"] == "gif":
         filestream.write(gifbox%(projectJSON["inh"]["thumbpfad"], projectJSON["titel"], projectJSON["inh"]["gifpfad"]))
     elif projectJSON["typ"] == "svg":
@@ -14,6 +14,6 @@ def createProjectHTMLTile(filestream, projectJSON):
     elif projectJSON["typ"] == "html":
         filestream.write(htmlbox%(projectJSON["inh"]["pfad"], projectJSON["titel"], projectJSON["titel"]))
     elif projectJSON["typ"] == "scratch":
-        filestream.write(scratchbox%(projectJSON["inh"]["pfad"], projectJSON["titel"], projectJSON["titel"]))
+        filestream.write(scratchbox%(scratchURLPrefix, projectJSON["inh"]["project-id"], projectJSON["titel"], projectJSON["titel"]))
     elif projectJSON["typ"] == "dreid":
         filestream.write(dreidbox%(projectJSON["inh"]["progpfad"], projectJSON["inh"]["thumbpfad"], projectJSON["titel"]))
