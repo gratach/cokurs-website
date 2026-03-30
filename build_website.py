@@ -158,11 +158,12 @@ def main():
         if import_config_file.is_file():
             print(f"Found config.json in the import folder: {import_config_file}")
             try:
-                with import_config_file.open() as f:
+                with import_config_file.open("r") as f:
                     import_config = load(f)
                 print("Loaded config.json successfully.")
             except Exception as e:
                 print(f"Error: Could not load config.json. {e}")
+                import_config = {}
         else:
             print(f"No config.json file found in the import folder: {import_path}")
             import_config = {}

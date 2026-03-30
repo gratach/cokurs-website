@@ -65,7 +65,7 @@ def assignNewFilesToExistingOnes(existing_dir_path, new_dir_path):
     # Step 2: Process new files
     # --------------------------------
 
-    unmatched_files = []
+    unmatched_files = {}
 
     for file_path in new_dir_path.iterdir():
         if not file_path.is_file():
@@ -79,7 +79,7 @@ def assignNewFilesToExistingOnes(existing_dir_path, new_dir_path):
             target_name = existing_hash_to_names[file_hash][0]
             assignment_dict[name] = target_name
         else:
-            unmatched_files.append(name)
+            unmatched_files[name] = file_hash
 
     # --------------------------------
     # Step 3: Sort unmatched files
@@ -88,7 +88,7 @@ def assignNewFilesToExistingOnes(existing_dir_path, new_dir_path):
     numeric_files = []
     other_files = []
 
-    for name in unmatched_files:
+    for name in unmatched_files.keys():
         base, ext = os.path.splitext(name)
 
         if ext == "" and _is_positive_int_filename(base):
@@ -133,12 +133,20 @@ def assignNewFilesToExistingOnes(existing_dir_path, new_dir_path):
     # --------------------------------
 
     for name in ordered_unmatched:
+        file_hash = unmatched_files[name]
+        if file_hash in existing_hash_to_names:
+            target_name = existing_hash_to_names[file_hash][0]
+            assignment_dict[name] = target_name
+            continue
+
         num = next(free_numbers)
         used_numbers.add(num)
 
         target_name = str(num)
 
         assignment_dict[name] = target_name
+        
+        existing_hash_to_names[file_hash] = [target_name]
 
     # --------------------------------
     # Step 6: Create missing files in existing directory
