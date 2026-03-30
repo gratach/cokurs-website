@@ -32,7 +32,18 @@ audiobox = """
 gifbox = """
 <div class= "kasten">
 	<div class="hintergrund" style="background-image:url('%s')" title = "%s">
-		<button class = "pisk" style = "background-image:url('%s')"/>
+		<button 
+		class="pisk"
+		onclick="
+			const bg = this.style.backgroundImage;
+			this.style.backgroundImage='none';
+			this.offsetHeight; // force reflow
+			this.style.backgroundImage=bg;
+			this.classList.toggle('aktiv');
+            this.blur();
+		"
+		style="background-image:url('%s')">
+		</button>
 	</div>
 </div>
 """
@@ -172,6 +183,9 @@ a, img, .seite{
 }
 .pisk:focus{
 	opacity:1;
+}
+.pisk.aktiv {
+    opacity: 1;
 }
 .hintergrund{
 	image-rendering: pixelated;
